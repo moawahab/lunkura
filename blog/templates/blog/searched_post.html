@@ -1,0 +1,24 @@
+{% extends "blog/layout.html" %}
+{% block content %}
+
+    <center>
+        {% if Searched %}
+            <h1> You Searched For {{ Searched }} </h1>
+
+        {% else %}
+            <h1>
+                Hey! You Forgot to Searched For a Project...
+            </h1>
+
+
+        {% endif %}
+
+    </center>
+
+
+
+
+
+
+
+{% endblock %}
