@@ -4,8 +4,7 @@ Start Navigation Bar
 ================================= -->
     <!-- NAVIGATION -->
 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 fixed-top">
-    <div class="container">
-      
+    <div class="container">      
           <a href="#" class="navbar-brand">lunkura portfolio</a>
           <button 
               class="navbar-toggler" 
@@ -15,10 +14,34 @@ Start Navigation Bar
           >
               <span class="navbar-toggler-icon"> </span>
           </button>
-          <div class="collapse navbar-collapse" id="navmenu">
+            <div class="collapse navbar-collapse" id="navmenu">
                 <ul class="navbar-nav mr-auto">
+                <!-- Category Menu Code -->
+                {% if cat_menu %}
+                    <li class="nav-item dropdown ">
+                        <a href="#" class="nav-link dropdown-toggle"
+                        id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Features
+                        </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            {% for item in cat_menu %}
+                                <li><a href="{% url 'category' item %}" 
+                                class="dropdown-item">{{ item }} </a></li>
+                            {% endfor %}
+                                <li><a href="#" 
+                                class="dropdown-item"> Feature 1</a></li>
+                            </ul>
+                    </li>
 
-                <!-- {% if user.is_authenticated %} -->
+                {% else %}
+                    <li class="nav-item">
+                      <a href="{% url 'category-list' %}" class="nav-link">Categories</a>
+                    </li>
+
+                {% endif %}
+                     <!-- User Auths -->
+                {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a href="{% url 'logout' %}" class="nav-link">Logout</a>
                     </li>
@@ -28,7 +51,7 @@ Start Navigation Bar
                     <li class="nav-item">
                         <a href="{% url 'add-category' %}" class="nav-link">Add Category</a>
                     </li>
-                <!-- {% else %} -->
+                {% else %}
                     <li class="nav-item">
                         <a href="{% url 'register' %}" class="nav-link">Register</a>
                     </li>
@@ -36,40 +59,12 @@ Start Navigation Bar
                     <a href="{% url 'login' %}" class="nav-link">Login</a>
                     </li>
 
-                <!-- {% endif%} -->
+                {% endif%}
 
                   <li class="nav-item">
                       <a href="{% url 'home' %}" class="nav-link ">Home</a>
                   </li>
                  
-                 
-                 
-                 
-                <!-- Category Menu Code -->
-                {% if cat_menu %}
-
-                  <li class="nav-item dropdown ">
-                      <a href="#" class="nav-link dropdown-toggle"
-                      id="navbarDropdown" role="button"
-                      data-bs-toggle="dropdown" aria-expanded="false">
-                        Features
-                      </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            {% for item in cat_menu %}
-                            <li><a href="{% url 'category' item %}" 
-                                class="dropdown-item">{{ item }} </a></li>
-                            {% endfor %}
-
-                            <li><a href="#" 
-                            class="dropdown-item"> Feature 1</a></li>
-                {% else %}
-                    <li class="nav-item">
-                        <a href="{% url 'category-list' %}" class="nav-link">Categories</a>
-                    </li>
-
-                {% endif %}
-                        </ul>
-                  </li>
                 </ul>
           </div>
 

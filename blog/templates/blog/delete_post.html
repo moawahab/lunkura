@@ -4,21 +4,26 @@
 
 
 {% if user.is_authenticated %}
-    <h1>Delete Post...</h1>
-    <br><br>
-    <h3>Delete: {{post.title}}</h3>
-    <br/><br/>
+    {% if user.id == post.author.id %}
+        <h1>Delete Post...</h1>
+        <br><br>
+        <h3>Delete: {{post.title}}</h3>
+        <br/><br/>
 
-    <div class="form-group">
+        <div class="form-group">
 
-    <form method="POST">
+        <form method="POST">
 
-        {% csrf_token %}
-        <strong>Are you sure?!</strong><br>
-        <button class="btn btn-secondary">Delete Post!</button>
-    </form>
+            {% csrf_token %}
+            <strong>Are you sure?!</strong><br>
+            <button class="btn btn-secondary">Delete Post!</button>
+        </form>
 
-    </div>
+        </div>
+
+    {% else %}
+        You're  Not Allowed Here! (and you know it!...)
+    {% endif %}    
 
 {% else %}
 

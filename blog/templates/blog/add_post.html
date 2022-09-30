@@ -20,6 +20,11 @@
             </form>
         </div>
 
+        <script>
+            var name = "{{ user.id }}";
+            document.getElementById("moawa").value = name;
+        </script>
+
     {% endif %}
 {% else %}
     You're not allowed here! (and you know it )

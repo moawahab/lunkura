@@ -1,20 +1,42 @@
-# from unicodedata import category
-from urllib import request
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+
 # Create your views here.
 
 from django.views import generic
-from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    DeleteView,
+    UpdateView,
+)
 from .models import Post, Category
 from .forms import PostForm, EditForm
+
+
+def LikeView(request, pk):
+    post = get_object_or_404(Post, id=request.POST.get("post_id"))
+    liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+    return HttpResponseRedirect(reverse("article-details", args=[str(pk)]))
+
+
+    # looking up a post whatever the post id was that was clicked
+    # so post_id is the id giving to our clickacle button or replace with whatever the clickable button id was
+    # we pass in the request and it contains the user id if they're log in
 
 class HomeView(ListView):
     model = Post
     template_name = "blog/home.html"
     cats = Category.objects.all()
-    ordering = [ '-post_date' ]
+    ordering = ["-post_date"]
 
     def get_context_data(self, *args, **kwargs):
         cat_menu = Category.objects.all()
@@ -22,43 +44,65 @@ class HomeView(ListView):
         context["cat_menu"] = cat_menu
         return context
 
+
 def CategoryListView(request):
     cat_menu_list = Category.objects.all()
-    return render(request, 'blog/category_list.html', {'cat_menu_list': cat_menu_list })
+    return render(request, "blog/category_list.html", {"cat_menu_list": cat_menu_list})
+
 
 def searched_post(request):
     if request.method == "POST":
-        searched = request.POST.get('searched', False)
-        #searched = request.POST['searched']
-        return render(request, 'blog/searched_post.html', {'searched':searched})
+        searched = request.POST.get("searched", False)
+        # searched = request.POST['searched']
+        return render(request, "blog/searched_post.html", {"searched": searched})
     else:
-        return render(request, 'blog/searched_post.html', {})
-
+        return render(request, "blog/searched_post.html", {})
 
 
 def CategoryView(request, cats):
-    category_posts = Post.objects.filter(category=cats.replace('-', ' '))
-    return render(request, 'blog/categories.html', {'cats':cats.title().replace('-', ' '), 'category_posts':category_posts})
+    category_posts = Post.objects.filter(category=cats.replace("-", " "))
+    return render(
+        request,
+        "blog/categories.html",
+        {"cats": cats.title().replace("-", " "), "category_posts": category_posts},
+    )
 
 
 class ArticleDetailView(DetailView):
     model = Post
     template_name = "blog/article_details.html"
 
-
     def get_context_data(self, *args, **kwargs):
         cat_menu = Category.objects.all()
         context = super(ArticleDetailView, self).get_context_data(*args, **kwargs)
+
+        stuff = get_object_or_404(Post, id=self.kwargs["pk"])
+        total_likes = stuff.total_likes()
+
+        liked = False
+        if stuff.likes.filter(id=self.request.user.id).exists():
+            liked = True
         context["cat_menu"] = cat_menu
+        context["total_likes"] = total_likes
+        context["liked"] = liked
         return context
+
+
+        # if stuff.likes.filter(id=self.request.id).exists():
+        #     liked = True
+
+
+
+
 
 
 class AddCategoryView(CreateView):
     model = Category
     template_name = "blog/add_category.html"
-    fields = ('name',)
+    fields = ("name",)
     # fields = '__all__'
     # form_class = PostForm
+
 
 def addpost(request):
     submitted = False
@@ -66,12 +110,14 @@ def addpost(request):
         form = PostForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('addpost?submitted=True')
+            return HttpResponseRedirect("addpost?submitted=True")
     else:
         form = PostForm
         if "submitted" in request.GET:
             submitted = True
-        return render(request, "blog/add_post.html", {'form':form, 'submitted':submitted})
+        return render(
+            request, "blog/add_post.html", {"form": form, "submitted": submitted}
+        )
 
 
 class UpdatePostView(UpdateView):
@@ -85,4 +131,4 @@ class UpdatePostView(UpdateView):
 class DeletePostView(DeleteView):
     model = Post
     template_name = "blog/delete_post.html"
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy("home")
