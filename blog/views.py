@@ -107,7 +107,7 @@ class AddCategoryView(CreateView):
 def addpost(request):
     submitted = False
     if request.method == "POST":
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect("addpost?submitted=True")
