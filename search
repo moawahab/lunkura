@@ -1,0 +1,80 @@
+I want to search multiple fields in many models. I don't want to use other apps like 'Haystack', only pure Django
+
+# models.py
+
+class Person(models.Model):
+    first_name = models.CharField("First name", max_length=255)
+    last_name = models.CharField("Last name", max_length=255)
+    # other fields
+
+
+class Restaurant(models.Model):
+    restaurant_name = models.CharField("Restaurant name", max_length=255)
+    # other fields
+
+
+class Pizza(models.Model):
+    pizza_name = models.CharField("Pizza name", max_length=255)
+    # other fields
+
+When I type "Tonny" I should get a:
+
+    "Tonny Montana" from Person model
+    "Tonny's Restaurant" from Restaurant model
+    "Tonny's Special Pizza" from Pizza model.
+
+
+One solution is to query all the models
+
+# Look up Q objects for combining different fields in a single query
+from django.db.models import Q
+people = Person.objects.filter(Q(first_name__contains=query) | Q(last_name__contains=query)
+restaurants = Restaurant.objects.filter(restaurant_name__contains=query)
+pizzas = Pizza.objects.filter(pizza_name__contains=query)
+
+Then combine the results, if you want
+
+from itertools import chain
+results = chain(people, restaurants, pizzas)
+
+Ok, sure, here's a more generic solution. Search all CharFields in all models:
+
+search_models = [] # Add your models here, in any way you find best.
+search_results = []
+for model in search_models:
+    fields = [x for x in model._meta.fields if isinstance(x, django.db.models.CharField)]
+    search_queries = [Q(**{x.name + "__contains" : search_query}) for x in fields]
+    q_object = Q()
+    for query in search_queries:
+        q_object = q_object | query
+
+    results = model.objects.filter(q_object)
+    search_results.append(results)
+
+This will give you a list of all the querysets, you can then mold it to a format you choose to work with.
+
+To get a list of models to fill search_models, you can do it manually, or use something like get_models. Read the docs for more information on how that works.
+
+
+
+I would like to run a query where the user can input the search string and the program will search the 3 models for where the data exists and return the same with the Id, name, and brand in the form of a JSON response.
+    Get query text from query params
+    Filter based on it
+    Return serializer data
+
+     def view(request):
+         query = request.GET.get("query", None)
+         pcs = PC.objects.all()
+         cell_phones = CellPhone.objects.all()
+         printers = Printer.objects.all()
+
+         if query:
+             pcs = pcs.filter(name__icontains=query)
+             cell_phones = cell_phones.filter(name__icontains=query)
+             printers = printers.filter(name__icontains=query)
+
+         return JsonResponse({"pcs": PCSerializer(instances=pcs, many=True).data,
+                             "cell_phones": CellPhoneSerializer(instances=cell_phones, many=True).data,
+                             "printers": PrinterSerializer(instances=printers, many=True).data})
+
+

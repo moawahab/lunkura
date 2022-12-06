@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-from .views import HomeView,ArticleDetailView,AddCategoryView,UpdatePostView, DeletePostView,  CategoryView, CategoryListView, searched_post, addpost, LikeView
+from .views import HomeView,ArticleDetailView,AddCategoryView,UpdatePostView, DeletePostView,  CategoryView, CategoryListView, searched_post, addpost, LikeView, AddCommentView
 
 
 urlpatterns = [
@@ -17,6 +17,7 @@ urlpatterns = [
     path('<int:pk>/remove', DeletePostView.as_view(), name='delete-post'),
     path('search_post/', searched_post, name='searched-post'),
     path('like/<int:pk>', LikeView, name='like_post'),
+    path('article/<int:pk>/comment/', AddCommentView.as_view(), name='add-comment'),
 ]
 
 

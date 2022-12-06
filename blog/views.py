@@ -12,8 +12,8 @@ from django.views.generic import (
     DeleteView,
     UpdateView,
 )
-from .models import Post, Category
-from .forms import PostForm, EditForm
+from .models import Post, Category, Comment
+from .forms import PostForm, EditForm, CommentForm
 
 
 def LikeView(request, pk):
@@ -118,6 +118,16 @@ def addpost(request):
         return render(
             request, "blog/add_post.html", {"form": form, "submitted": submitted}
         )
+
+
+class AddCommentView(CreateView):
+    model = Comment
+    template_name = "blog/add_comment.html"
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        form.instance.post_id = self.kwargs['pk']
+        return super().form_valid(form)
 
 
 class UpdatePostView(UpdateView):
