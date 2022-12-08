@@ -88,8 +88,11 @@ Start Navigation Bar
                   <li class="nav-item">
                       <a href="{% url 'home' %}" class="nav-link ">Home</a>
                   </li>
+
+                  
                  
                 </ul>
+
           </div>
 
           <!-- Searched Form -->
@@ -102,6 +105,47 @@ Start Navigation Bar
             <button class="btn btn-outline-secondary" 
             type="submit">Search</button>
         </form>
+
+        {% if user.is_authenticated %}
+            <!-- {% if user.profile.id%} -->
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown ">
+                <a href="#" class="nav-link dropdown-toggle"
+                id="navbarDropdown" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                {{ user.first_name }}
+                {{ user.last_name }}
+                </a>
+                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            
+                        <li><a href="{% url 'edit-profile' %}" 
+                        class="dropdown-item">Edit Settings</a></li>
+
+                        {% if user.profile.id%}
+                            <li><a href="{% url 'edit-profile-page' user.profile.id %}" 
+                            class="dropdown-item">Edit Profile Page</a></li>
+                            <li><a href="{% url 'show-profile-page' user.profile.id %}" 
+                            class="dropdown-item">Show Profile Page</a></li>
+                        {% else%}
+                            <li><a href="{% url 'create-profile-page' %}" 
+                            class="dropdown-item">Create Profile Page</a></li>
+                        {% endif%}
+                        <li><a href="{% url 'logout' %}" 
+                            class="dropdown-item">Logout</a></li>
+
+                    
+                    </ul>
+            </li>
+            <!-- <li class="nav-item">
+                <a class="nav-link" href="{% url 'show-profile-page' user.profile.id %}" >
+                    {{ user.first_name }}
+                    {{ user.last_name }}
+                </a>
+            </li> -->
+          </ul>
+            <!-- {% endif%} -->
+        {% endif%}
 
     </div>
 </nav>

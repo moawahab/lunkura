@@ -36,8 +36,8 @@ Post Author:  {{ post.author.id }}
 
 <p style="white-space:pre-wrap;">{{ post.body|safe}}</p>
     <hr>
-<!-- <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
-<br><br> -->
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+<br><br>
 
 <form action="{% url 'like_post' post.pk %}" method="POST">
     {% csrf_token %}
